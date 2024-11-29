@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+        <title>Предсказание стоимости квартиры</title>
+  </head>
+  <body>
+    <h1>Предсказание стоимости квартиры</h1>
+     <p>
+        <form id="myForm" enctype="multipart/form-data" method="post">
+         <p>Введите текст в json формате:
+             <br> <textarea style="width:350px; height:250px; name="test_text" id="test_text"></textarea> </p>
+       <p>или добавьте csv файл с текстами:
+        <label for="test_file" class = "file-input-label">
+             <input type="file" class="file-input" id="test_file"></label>
+         </p>
+        </form>
+
+         <button onclick="send()">Предсказать</button>
+
+         <p>
+        <form action="/file" target="_blank">
+            <button>Скачать csv c результатом</button>
+        </form>
+        </p>
+
+        <p><input type="button" class = 'file-button' onclick="document.getElementById('myForm').reset()" value="Очистить форму"></p>
+      <div id="message"></div>
+
+
+     <script>
+        async function send(){
+                document.getElementById("message").innerHTML = ''
+                const test_text = document.getElementById("test_text").value;
+
+                document.querySelector('button')
+                    let file = document.getElementById("test_file").files[0];
+                    if (file){
+
+                        let reader = new FileReader();
+
+                        reader.readAsText(file);
+                        reader.onload = function() {
+                                test_file = reader.result
+                                console.log(test_file)
+                                sendFetch('', test_file);
+                            }
+                        reader.onerror = function() {
+                            console.log(reader.error)
+                        }
+                    }
+                    if (test_text.length) {
+                        sendFetch(test_text, '');
+                    }
+
+                async function sendFetch(test_text, test_file) {
+                    // отправляем запрос
+                    const response = await fetch("/result", {
+                        method: "POST",
+                        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            text: test_text,
+                            file: test_file
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        document.getElementById("message").innerHTML += await data.message;
+                    }
+                    else
+                        console.log('NOT OK', response);
+                    }
+
+                }
+    </script>
+     <div id="message"></div>
+  </body>
+  </html>
+
