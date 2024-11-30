@@ -10,16 +10,22 @@ def edit_mileage(row):
     return row
 
 
+# видно, что используются различные единицы измерения
+# kgm - килограмм на метр
+# nm - ньютон на метр
+# rpm - количество оборотов, которое механизм или двигатель вращается за единицу времени
+# 1 kg-m to N-m = 9.80665 N-m
+# большинство значений в nm & поэтому будем переводить в эту единицу измерения
 def edit_torque(row):
 
     if type(row['torque']) != float:
 
-        text = row['torque'].replace('at', '').replace('@', '').lower()
+        text = row['torque'].replace('at', '').replace('@', '').lower() # удаление лишнего слова и знакак
         unit = text
-        unit = re.sub(r'[^a-z]',' ', unit).replace('rpm', '').strip()
-        col1 = re.sub(r'[^0-9.,]',' ', text).split(' ')[0]
+        unit = re.sub(r'[^a-z]',' ', unit).replace('rpm', '').strip() # выделение единицы измерения
+        col1 = re.sub(r'[^0-9.,]',' ', text).split(' ')[0] выделение цифры
         if unit == 'kgm':
-            row['torque'] = round(float(col1)*9.80665, 2)
+            row['torque'] = round(float(col1)*9.80665, 2) # перевод в другие единицы измерения
         else:
             row['torque'] = float(col1)
 
@@ -27,7 +33,7 @@ def edit_torque(row):
         if col2 == '':
             col2 = np.nan
 
-        row['max_torque_rpm'] = float(col2)
+        row['max_torque_rpm'] = float(col2) # формирования колонки max_torque_rpm
 
     else:
         row['torque'] = row['torque']
